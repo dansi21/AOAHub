@@ -1,0 +1,6 @@
+@AOAHub.API_HostAddress = http://localhost:5207
+
+GET {{AOAHub.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
