@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOAHub.UI", "AOAREC\AOAHub.UI.csproj", "{29DD088C-BB8F-4CE7-B4BC-598E451A807A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOAHub.Db", "AOAHub.Db\AOAHub.Db.csproj", "{41F855ED-A071-4B02-AF5E-2A951CA873D3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOAHub.Domain", "AOAHub.Domain\AOAHub.Domain.csproj", "{DA979F5B-9CC8-4B3D-9741-36EC7326974E}"
@@ -17,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{29DD088C-BB8F-4CE7-B4BC-598E451A807A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{29DD088C-BB8F-4CE7-B4BC-598E451A807A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{29DD088C-BB8F-4CE7-B4BC-598E451A807A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{29DD088C-BB8F-4CE7-B4BC-598E451A807A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{41F855ED-A071-4B02-AF5E-2A951CA873D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{41F855ED-A071-4B02-AF5E-2A951CA873D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41F855ED-A071-4B02-AF5E-2A951CA873D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
