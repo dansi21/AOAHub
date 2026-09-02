@@ -10,7 +10,7 @@ namespace AOAHub.Db
         {
             services.AddDbContext<AOAContext>(options =>
             {
-                options.UseSqlServer(config.GetConnectionString("DefaultConnection"));
+                options.UseSqlite(config.GetConnectionString("DefaultConnection"));
             });
         }
     }

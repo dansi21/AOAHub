@@ -1,4 +1,4 @@
-using AOAREC;
+using AOAHub.UI;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 

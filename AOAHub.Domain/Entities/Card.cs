@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace AOAHub.Domain.Entities;
 
-namespace AOAHub.Domain.Entities
+public class Card
 {
-    public class Card
-    {
-        int Id { get; set; }
-        string Title { get; set; }
-        string Description { get; set; }
-        string ImageUrl { get; set; }
-    }
+    public int Id { get; set; }
+    public string Code { get; set; } = string.Empty;
+    public string? Cost { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Type { get; set; } = string.Empty;
+    public string? Text { get; set; }
+    public int? Attack { get; set; }
+    public int? Defense { get; set; }
+    public string? SubType { get; set; }
+    public string? ImageUrl { get; set; }
+
+    public int ArtistId { get; set; }
+    public int SetId { get; set; }
 }

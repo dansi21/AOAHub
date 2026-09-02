@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOAHub.Domain", "AOAHub.Dom
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOAHub.API", "AOAHub.API\AOAHub.API.csproj", "{44946735-242B-475C-BDBA-47B14393AF84}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOAHub.UI", "AOAHub.UI\AOAHub.UI.csproj", "{26286E58-D1F6-4A17-88E8-D1D6969AD648}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOAHub.Shared", "AOAHub.Shared\AOAHub.Shared.csproj", "{5391E7C7-2613-48F5-8D64-8C0584F86278}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,8 +31,19 @@ Global
 		{44946735-242B-475C-BDBA-47B14393AF84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44946735-242B-475C-BDBA-47B14393AF84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44946735-242B-475C-BDBA-47B14393AF84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26286E58-D1F6-4A17-88E8-D1D6969AD648}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26286E58-D1F6-4A17-88E8-D1D6969AD648}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26286E58-D1F6-4A17-88E8-D1D6969AD648}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26286E58-D1F6-4A17-88E8-D1D6969AD648}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5391E7C7-2613-48F5-8D64-8C0584F86278}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5391E7C7-2613-48F5-8D64-8C0584F86278}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5391E7C7-2613-48F5-8D64-8C0584F86278}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5391E7C7-2613-48F5-8D64-8C0584F86278}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {341B7A65-5EB3-4063-AEB4-42DEA7102929}
 	EndGlobalSection
 EndGlobal
