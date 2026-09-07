@@ -1,17 +1,16 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+    <header class="top-bar">
+        <a class="brand" href="/">AOAHub</a>
 
-    <main>
-        <div class="top-row px-4 auth">
-            <LoginDisplay />
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+        <nav class="tabs">
+            <NavLink class="tab" href="sets">Sets</NavLink>
+            <NavLink class="tab" href="artists">Artists</NavLink>
+        </nav>
+    </header>
 
-        <article class="content px-4">
-            @Body
-        </article>
+    <main class="content">
+        @Body
     </main>
 </div>

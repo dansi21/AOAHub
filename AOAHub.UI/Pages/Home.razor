@@ -1,11 +1,23 @@
-﻿@page "/"
+@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>AOAHub</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="hero">
+    <div class="hero-content">
+        <span class="kicker">AOAHub Archive</span>
+        <h1>Search for a <span class="accent">card</span></h1>
+        <p class="subtitle">Look up any card by name or ability text across the Awakening set.</p>
 
-<div class="alert alert-warning" role="alert">
-    Before authentication will function correctly, you must configure your provider details in <code>Program.cs</code>
+        <label class="search">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
+                <path d="M20 20L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            <input type="search" placeholder="Search cards..." @bind="SearchTerm" @bind:event="oninput" />
+        </label>
+    </div>
 </div>
 
-Welcome to your new app.
+@code {
+    private string SearchTerm = string.Empty;
+}

@@ -18,6 +18,14 @@ internal class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("UI", policy => policy
+                .WithOrigins("http://localhost:5277")
+                .AllowAnyHeader()
+                .AllowAnyMethod());
+        });
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -28,6 +36,8 @@ internal class Program
         }
 
         app.UseHttpsRedirection();
+
+        app.UseCors("UI");
 
         app.UseAuthorization();
 

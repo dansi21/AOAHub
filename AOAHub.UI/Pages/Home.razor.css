@@ -1,0 +1,118 @@
+.hero {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 2rem 1.5rem 8rem;
+    overflow: hidden;
+}
+
+.hero::before,
+.hero::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.hero::before {
+    width: 26rem;
+    height: 26rem;
+    background: rgba(232, 185, 84, 0.16);
+    top: -6rem;
+    left: 50%;
+    transform: translateX(-70%);
+}
+
+.hero::after {
+    width: 22rem;
+    height: 22rem;
+    background: rgba(112, 98, 220, 0.14);
+    bottom: -2rem;
+    right: 50%;
+    transform: translateX(60%);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    max-width: 36rem;
+    text-align: center;
+}
+
+.kicker {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #e8b954;
+}
+
+.hero h1 {
+    margin: 0;
+    font-size: clamp(1.9rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.15;
+    color: #f4f4f7;
+}
+
+.accent {
+    background: linear-gradient(135deg, #e8b954, #f4d58d);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.subtitle {
+    margin: 0;
+    color: #a7a9b8;
+    font-size: 1rem;
+}
+
+.search {
+    position: relative;
+    width: 100%;
+    max-width: 34rem;
+    display: flex;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.search-icon {
+    position: absolute;
+    left: 1.1rem;
+    width: 1.15rem;
+    height: 1.15rem;
+    color: #7f818f;
+    pointer-events: none;
+}
+
+.search input {
+    width: 100%;
+    padding: 0.95rem 1.25rem 0.95rem 3rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+    color: #f4f4f7;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search input::placeholder {
+    color: #7f818f;
+}
+
+.search input:focus {
+    border-color: #e8b954;
+    background: rgba(255, 255, 255, 0.09);
+    box-shadow: 0 0 0 4px rgba(232, 185, 84, 0.15);
+}

@@ -1,0 +1,61 @@
+@page "/sets"
+@using AOAHub.Domain.Entities
+@inject HttpClient Http
+
+<PageTitle>Sets - AOAHub</PageTitle>
+
+<div class="sets-page">
+    <div class="sets-header">
+        <span class="kicker">AOAHub Archive</span>
+        <h1>Sets</h1>
+    </div>
+
+    @if (Error is not null)
+    {
+        <div class="state">
+            <p>@Error</p>
+        </div>
+    }
+    else if (SetList is null)
+    {
+        <div class="state">
+            <p>Loading sets...</p>
+        </div>
+    }
+    else if (SetList.Count == 0)
+    {
+        <div class="state">
+            <p>No sets yet.</p>
+        </div>
+    }
+    else
+    {
+        <div class="set-grid">
+            @foreach (var set in SetList)
+            {
+                <div class="set-card">
+                    <span class="set-code">@set.Code</span>
+                    <h2>@set.Name</h2>
+                    <span class="set-date">@(set.ReleaseDate?.ToString("MMMM yyyy") ?? "Unreleased")</span>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<Set>? SetList;
+    private string? Error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            SetList = await Http.GetFromJsonAsync<List<Set>>("sets");
+        }
+        catch (Exception)
+        {
+            Error = "Couldn't load sets right now.";
+        }
+    }
+}
