@@ -1,4 +1,8 @@
 @page "/"
+@using System.Threading
+@using AOAHub.UI.Models
+@inject HttpClient Http
+@implements IDisposable
 
 <PageTitle>AOAHub</PageTitle>
 
@@ -8,16 +12,156 @@
         <h1>Search for a <span class="accent">card</span></h1>
         <p class="subtitle">Look up any card by name or ability text across the Awakening set.</p>
 
-        <label class="search">
-            <svg class="search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
-                <path d="M20 20L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-            </svg>
-            <input type="search" placeholder="Search cards..." @bind="SearchTerm" @bind:event="oninput" />
-        </label>
+        <div class="search-wrap" @onfocusout="OnFocusOut">
+            <label class="search">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
+                    <path d="M20 20L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <input type="search"
+                       placeholder="Search cards..."
+                       value="@SearchTerm"
+                       @oninput="OnSearchInput"
+                       @onkeydown="OnKeyDown"
+                       @onfocus="OnFocus" />
+            </label>
+
+            @if (IsOpen)
+            {
+                <div class="results">
+                    @if (IsLoading)
+                    {
+                        <div class="result-state">Searching...</div>
+                    }
+                    else if (HasError)
+                    {
+                        <div class="result-state">Something went wrong. Try again.</div>
+                    }
+                    else if (Results is null || Results.Count == 0)
+                    {
+                        <div class="result-state">No matches for "@SearchTerm".</div>
+                    }
+                    else
+                    {
+                        @foreach (var result in Results.Take(8))
+                        {
+                            <button type="button" class="result" @onclick="() => SelectResult(result)">
+                                <span class="result-type @(result.Type == "Artist" ? "artist" : "card")">@result.Type</span>
+                                <span class="result-body">
+                                    <span class="result-name">@result.Name</span>
+                                    @if (!string.IsNullOrWhiteSpace(result.Description))
+                                    {
+                                        <span class="result-desc">@result.Description</span>
+                                    }
+                                </span>
+                            </button>
+                        }
+                    }
+                </div>
+            }
+        </div>
     </div>
 </div>
 
 @code {
     private string SearchTerm = string.Empty;
+    private List<SearchResult>? Results;
+    private bool IsOpen;
+    private bool IsLoading;
+    private bool HasError;
+    private CancellationTokenSource? _debounceCts;
+
+    private async Task OnSearchInput(ChangeEventArgs e)
+    {
+        Console.WriteLine($"[diag] OnSearchInput enter, value='{e.Value}'");
+        SearchTerm = e.Value?.ToString() ?? string.Empty;
+
+        // Cancel (but don't dispose) any in-flight search: a still-running
+        // continuation below may read cts.Token/IsCancellationRequested after
+        // this point, and Dispose() would make that throw.
+        _debounceCts?.Cancel();
+
+        if (SearchTerm.Trim().Length < 2)
+        {
+            Results = null;
+            HasError = false;
+            IsLoading = false;
+            IsOpen = false;
+            return;
+        }
+
+        var cts = new CancellationTokenSource();
+        _debounceCts = cts;
+
+        IsOpen = true;
+        IsLoading = true;
+
+        try
+        {
+            await Task.Delay(250, cts.Token);
+            var results = await Http.GetFromJsonAsync<List<SearchResult>>($"search?q={Uri.EscapeDataString(SearchTerm)}", cts.Token);
+
+            if (cts.IsCancellationRequested)
+            {
+                return;
+            }
+
+            Results = results;
+            HasError = false;
+        }
+        catch (OperationCanceledException)
+        {
+            // superseded by a newer keystroke
+        }
+        catch (Exception)
+        {
+            if (!cts.IsCancellationRequested)
+            {
+                Results = null;
+                HasError = true;
+            }
+        }
+        finally
+        {
+            if (!cts.IsCancellationRequested)
+            {
+                IsLoading = false;
+            }
+        }
+    }
+
+    private void OnFocus()
+    {
+        if (SearchTerm.Trim().Length >= 2)
+        {
+            IsOpen = true;
+        }
+    }
+
+    private async Task OnFocusOut()
+    {
+        await Task.Delay(150);
+        IsOpen = false;
+        StateHasChanged();
+    }
+
+    private void OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            IsOpen = false;
+        }
+    }
+
+    private void SelectResult(SearchResult result)
+    {
+        SearchTerm = result.Name;
+        IsOpen = false;
+    }
+
+    public void Dispose()
+    {
+        _debounceCts?.Cancel();
+        _debounceCts?.Dispose();
+    }
 }

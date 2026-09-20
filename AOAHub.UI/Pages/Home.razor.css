@@ -77,13 +77,18 @@
     font-size: 1rem;
 }
 
-.search {
+.search-wrap {
     position: relative;
     width: 100%;
     max-width: 34rem;
+    margin-top: 0.5rem;
+}
+
+.search {
+    position: relative;
+    width: 100%;
     display: flex;
     align-items: center;
-    margin-top: 0.5rem;
 }
 
 .search-icon {
@@ -115,4 +120,94 @@
     border-color: #e8b954;
     background: rgba(255, 255, 255, 0.09);
     box-shadow: 0 0 0 4px rgba(232, 185, 84, 0.15);
+}
+
+.results {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    max-height: 22rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 0.4rem;
+    border-radius: 1rem;
+    background: #16181f;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    text-align: left;
+    z-index: 20;
+}
+
+.result-state {
+    padding: 0.9rem 1rem;
+    color: #a7a9b8;
+    font-size: 0.9rem;
+}
+
+.result {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: none;
+    border-radius: 0.7rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+}
+
+.result:hover,
+.result:focus-visible {
+    background: rgba(255, 255, 255, 0.06);
+    outline: none;
+}
+
+.result-type {
+    flex-shrink: 0;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+}
+
+.result-type.artist {
+    background: linear-gradient(135deg, #e8b954, #c98f2c);
+    color: #14151b;
+}
+
+.result-type.card {
+    background: rgba(139, 124, 246, 0.18);
+    color: #c3b8ff;
+}
+
+.result-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.result-name {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #f4f4f7;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.result-desc {
+    font-size: 0.8rem;
+    color: #a7a9b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
