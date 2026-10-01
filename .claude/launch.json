@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "AOAHub.UI",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "AOAHub.UI", "--urls", "http://localhost:5277"],
+      "port": 5277
+    },
+    {
+      "name": "AOAHub.API",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "AOAHub.API", "--launch-profile", "http", "--urls", "http://localhost:5207"],
+      "port": 5207
+    }
+  ]
+}

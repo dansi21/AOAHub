@@ -2,15 +2,15 @@
 @using System.Threading
 @using AOAHub.UI.Models
 @inject HttpClient Http
+@inject NavigationManager Navigation
 @implements IDisposable
 
-<PageTitle>AOAHub</PageTitle>
+<PageTitle>AspectAtlas</PageTitle>
 
 <div class="hero">
     <div class="hero-content">
-        <span class="kicker">AOAHub Archive</span>
         <h1>Search for a <span class="accent">card</span></h1>
-        <p class="subtitle">Look up any card by name or ability text across the Awakening set.</p>
+        <p class="subtitle">Look up any card by name or ability text.</p>
 
         <div class="search-wrap" @onfocusout="OnFocusOut">
             <label class="search">
@@ -46,13 +46,23 @@
                         @foreach (var result in Results.Take(8))
                         {
                             <button type="button" class="result" @onclick="() => SelectResult(result)">
-                                <span class="result-type @(result.Type == "Artist" ? "artist" : "card")">@result.Type</span>
+                                <span class="result-thumb">
+                                    @if (result.Type == "Artist")
+                                    {
+                                        <ArtistMark Name="@result.Name" Src="@result.ImageUrl" Size="2.75rem" />
+                                    }
+                                    else if (!string.IsNullOrWhiteSpace(result.ImageUrl))
+                                    {
+                                        <CardImage Src="@result.ImageUrl" Alt="@result.Name" />
+                                    }
+                                    else
+                                    {
+                                        <span class="result-noart">@result.Name[0]</span>
+                                    }
+                                </span>
                                 <span class="result-body">
                                     <span class="result-name">@result.Name</span>
-                                    @if (!string.IsNullOrWhiteSpace(result.Description))
-                                    {
-                                        <span class="result-desc">@result.Description</span>
-                                    }
+                                    <span class="result-desc">@result.TypeLine</span>
                                 </span>
                             </button>
                         }
@@ -73,7 +83,6 @@
 
     private async Task OnSearchInput(ChangeEventArgs e)
     {
-        Console.WriteLine($"[diag] OnSearchInput enter, value='{e.Value}'");
         SearchTerm = e.Value?.ToString() ?? string.Empty;
 
         // Cancel (but don't dispose) any in-flight search: a still-running
@@ -155,8 +164,9 @@
 
     private void SelectResult(SearchResult result)
     {
-        SearchTerm = result.Name;
         IsOpen = false;
+
+        Navigation.NavigateTo(result.Type == "Artist" ? $"artists/{result.Id}" : $"cards/{result.Id}");
     }
 
     public void Dispose()

@@ -1,0 +1,82 @@
+@page "/sets/{Id:int}"
+@using System.Net
+@using AOAHub.Domain.Entities
+@using AOAHub.UI.Models
+@inject HttpClient Http
+
+<PageTitle>@(SetInfo?.Name ?? "Set") - AspectAtlas</PageTitle>
+
+<div class="set-page">
+    <a class="back" href="sets">&larr; All sets</a>
+
+    @if (NotFound)
+    {
+        <div class="state">This set doesn't exist.</div>
+    }
+    else if (Error is not null)
+    {
+        <div class="state">@Error</div>
+    }
+    else if (SetInfo is null || Cards is null)
+    {
+        <div class="state">Loading set...</div>
+    }
+    else
+    {
+        <CardBrowser Cards="Cards" BasePath="@($"sets/{Id}")" IsList="IsList">
+            <Heading Context="count">
+                <div class="set-heading">
+                    <SetIcon Src="@SetInfo.ImageUrl" Alt="@SetInfo.Name" Size="5rem" />
+                    <div class="set-title">
+                        <span class="kicker">Set &middot; @SetInfo.Code</span>
+                        <h1>@SetInfo.Name</h1>
+                        <span class="set-meta">@count &middot; @(SetInfo.ReleaseDate?.ToString("MMMM yyyy") ?? "Unreleased")</span>
+                    </div>
+                </div>
+            </Heading>
+        </CardBrowser>
+    }
+</div>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    [SupplyParameterFromQuery(Name = "view")]
+    public string? View { get; set; }
+
+    private Set? SetInfo;
+    private List<CardRow>? Cards;
+    private bool NotFound;
+    private string? Error;
+    private int _loadedId;
+
+    private bool IsList => string.Equals(View, "list", StringComparison.OrdinalIgnoreCase);
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_loadedId == Id)
+        {
+            return;
+        }
+
+        _loadedId = Id;
+        SetInfo = null;
+        Cards = null;
+        NotFound = false;
+        Error = null;
+
+        try
+        {
+            SetInfo = await Http.GetFromJsonAsync<Set>($"sets/{Id}");
+            Cards = await Http.GetFromJsonAsync<List<CardRow>>($"sets/{Id}/cards") ?? new();
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            NotFound = true;
+        }
+        catch (Exception)
+        {
+            Error = "Couldn't load this set right now.";
+        }
+    }
+}

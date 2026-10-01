@@ -1,0 +1,17 @@
+.card-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 5 / 7;
+    overflow: hidden;
+    border-radius: 4.5% / 3.2%;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Source PNGs are 825x1125 with print bleed; scale so only the 750x1050 trim area shows. */
+.card-image img {
+    position: absolute;
+    top: -3.57%;
+    left: -5%;
+    width: 110%;
+    height: 107.14%;
+}

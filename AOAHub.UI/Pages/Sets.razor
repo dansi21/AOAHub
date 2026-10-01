@@ -2,11 +2,10 @@
 @using AOAHub.Domain.Entities
 @inject HttpClient Http
 
-<PageTitle>Sets - AOAHub</PageTitle>
+<PageTitle>Sets - AspectAtlas</PageTitle>
 
 <div class="sets-page">
     <div class="sets-header">
-        <span class="kicker">AOAHub Archive</span>
         <h1>Sets</h1>
     </div>
 
@@ -33,11 +32,12 @@
         <div class="set-grid">
             @foreach (var set in SetList)
             {
-                <div class="set-card">
+                <a class="set-card" href="sets/@set.Id">
+                    <SetIcon Src="@set.ImageUrl" Alt="@set.Name" Size="5rem" />
                     <span class="set-code">@set.Code</span>
                     <h2>@set.Name</h2>
                     <span class="set-date">@(set.ReleaseDate?.ToString("MMMM yyyy") ?? "Unreleased")</span>
-                </div>
+                </a>
             }
         </div>
     }

@@ -1,0 +1,24 @@
+.artist-mark {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.artist-mark img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.artist-mark.initial {
+    background: linear-gradient(135deg, #e8b954, #c98f2c);
+    color: #14151b;
+    font-size: calc(var(--size) * 0.45);
+    font-weight: 700;
+}

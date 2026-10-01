@@ -1,0 +1,94 @@
+@page "/artists/{Id:int}"
+@using System.Net
+@using AOAHub.UI.Models
+@inject HttpClient Http
+
+<PageTitle>@(Artist?.Name ?? "Artist") - AspectAtlas</PageTitle>
+
+<div class="artist-page">
+    <a class="back" href="artists">&larr; All artists</a>
+
+    @if (NotFound)
+    {
+        <div class="state">This artist doesn't exist.</div>
+    }
+    else if (Error is not null)
+    {
+        <div class="state">@Error</div>
+    }
+    else if (Artist is null || Cards is null)
+    {
+        <div class="state">Loading artist...</div>
+    }
+    else
+    {
+        <CardBrowser Cards="Cards" BasePath="@($"artists/{Id}")" IsList="IsList">
+            <Heading Context="count">
+                <div class="artist-heading">
+                    <ArtistMark Name="@Artist.Name" Src="@Artist.ImageUrl" Size="5rem" />
+                    <div class="artist-title">
+                        <span class="kicker">Artist</span>
+                        <h1>@Artist.Name</h1>
+                        <span class="artist-meta">
+                            @count
+                            @if (SiteUrl is not null)
+                            {
+                                <text> &middot; </text>
+                                <a class="artist-site" href="@SiteUrl" target="_blank" rel="noopener noreferrer">Visit site &#8599;</a>
+                            }
+                        </span>
+                    </div>
+                </div>
+            </Heading>
+        </CardBrowser>
+    }
+</div>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    [SupplyParameterFromQuery(Name = "view")]
+    public string? View { get; set; }
+
+    private ArtistSummary? Artist;
+    private List<CardRow>? Cards;
+    private bool NotFound;
+    private string? Error;
+    private int _loadedId;
+
+    private bool IsList => string.Equals(View, "list", StringComparison.OrdinalIgnoreCase);
+
+    private string? SiteUrl =>
+        Uri.TryCreate(Artist?.LinkBlob?.Trim(), UriKind.Absolute, out var uri) &&
+        (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
+            ? uri.AbsoluteUri
+            : null;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_loadedId == Id)
+        {
+            return;
+        }
+
+        _loadedId = Id;
+        Artist = null;
+        Cards = null;
+        NotFound = false;
+        Error = null;
+
+        try
+        {
+            Artist = await Http.GetFromJsonAsync<ArtistSummary>($"artists/{Id}");
+            Cards = await Http.GetFromJsonAsync<List<CardRow>>($"artists/{Id}/cards") ?? new();
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            NotFound = true;
+        }
+        catch (Exception)
+        {
+            Error = "Couldn't load this artist right now.";
+        }
+    }
+}

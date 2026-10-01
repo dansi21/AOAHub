@@ -38,21 +38,34 @@ namespace AOAHub.API.Controllers
                     Type = "Artist",
                     Id = a.Id,
                     Name = a.Name,
+                    TypeLine = "Artist",
+                    ImageUrl = a.ImageUrl,
                     Weight = ArtistWeight
                 })
                 .ToListAsync();
 
-            var cardResults = await _context.Cards
+            var cardRows = await _context.Cards
                 .Where(c => EF.Functions.Like(c.Name, pattern) || (c.Text != null && EF.Functions.Like(c.Text, pattern)))
-                .Select(c => new SearchResult
+                .Select(c => new
                 {
-                    Type = "Card",
-                    Id = c.Id,
-                    Name = c.Name,
-                    Description = c.Text,
+                    c.Id,
+                    c.Name,
+                    c.Type,
+                    c.SubType,
+                    c.ImageUrl,
                     Weight = EF.Functions.Like(c.Name, pattern) ? CardNameWeight : CardTextWeight
                 })
                 .ToListAsync();
+
+            var cardResults = cardRows.Select(c => new SearchResult
+            {
+                Type = "Card",
+                Id = c.Id,
+                Name = c.Name,
+                TypeLine = string.IsNullOrWhiteSpace(c.SubType) ? c.Type : $"{c.Type} — {c.SubType.Trim()}",
+                ImageUrl = c.ImageUrl,
+                Weight = c.Weight
+            });
 
             var results = artistResults
                 .Concat(cardResults)

@@ -1,0 +1,136 @@
+@using AOAHub.UI.Models
+
+<div class="browser-header">
+    @Heading?.Invoke(CountText)
+
+    <div class="browser-tools">
+        <label class="filter">
+            <svg class="filter-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
+                <path d="M20 20L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            <input type="search" placeholder="Filter by name..." value="@SearchTerm" @oninput="OnFilterInput" />
+        </label>
+
+        <div class="view-toggle" role="group" aria-label="Card layout">
+            <a href="@BasePath" class="@(IsList ? "" : "active")" title="Grid view" aria-label="Grid view">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+                    <rect x="4" y="4" width="6" height="6" rx="1" />
+                    <rect x="14" y="4" width="6" height="6" rx="1" />
+                    <rect x="4" y="14" width="6" height="6" rx="1" />
+                    <rect x="14" y="14" width="6" height="6" rx="1" />
+                </svg>
+            </a>
+            <a href="@BasePath?view=list" class="@(IsList ? "active" : "")" title="List view" aria-label="List view">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M9 6h11M9 12h11M9 18h11" />
+                    <circle cx="4.5" cy="6" r="0.6" />
+                    <circle cx="4.5" cy="12" r="0.6" />
+                    <circle cx="4.5" cy="18" r="0.6" />
+                </svg>
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (Filtered.Count == 0)
+{
+    <div class="browser-empty">
+        @(Cards.Count == 0 ? "No cards yet." : $"No cards match \"{SearchTerm}\".")
+    </div>
+}
+else if (IsList)
+{
+    <div class="card-list">
+        <Virtualize Items="Filtered" Context="card" ItemSize="88" OverscanCount="3">
+            <a class="card-row" href="cards/@card.Id">
+                <span class="row-thumb">
+                    @if (!string.IsNullOrWhiteSpace(card.ImageUrl))
+                    {
+                        <CardImage Src="@card.ImageUrl" Alt="@card.Name" />
+                    }
+                </span>
+                <span class="row-code">@card.Code</span>
+                <span class="row-main">
+                    <span class="row-name">@card.Name</span>
+                    <span class="row-type">@card.TypeLine</span>
+                </span>
+                <span class="row-cost"><CostSymbols Cost="@card.Cost" /></span>
+                <span class="row-stats">@(card.Attack is not null && card.Defense is not null ? $"{card.Attack}/{card.Defense}" : "")</span>
+            </a>
+        </Virtualize>
+    </div>
+}
+else
+{
+    <div class="card-grid">
+        @foreach (var card in Filtered)
+        {
+            <a class="grid-card" href="cards/@card.Id">
+                <span class="grid-art">
+                    @if (!string.IsNullOrWhiteSpace(card.ImageUrl))
+                    {
+                        <CardImage Src="@card.ImageUrl" Alt="@card.Name" />
+                    }
+                    else
+                    {
+                        <span class="grid-noart">No image</span>
+                    }
+                </span>
+                <span class="grid-name">@card.Name</span>
+            </a>
+        }
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired] public List<CardRow> Cards { get; set; } = new();
+
+    /// <summary>Page path the view toggle links back to, e.g. "sets/1".</summary>
+    [Parameter, EditorRequired] public string BasePath { get; set; } = string.Empty;
+
+    [Parameter] public bool IsList { get; set; }
+
+    /// <summary>Left side of the header. Receives the live count text, e.g. "5 of 148 cards".</summary>
+    [Parameter] public RenderFragment<string>? Heading { get; set; }
+
+    private string SearchTerm = string.Empty;
+    private List<CardRow> Filtered = new();
+    private List<CardRow>? _lastCards;
+
+    private string CountText
+    {
+        get
+        {
+            var noun = Cards.Count == 1 ? "card" : "cards";
+            return Filtered.Count == Cards.Count
+                ? $"{Cards.Count} {noun}"
+                : $"{Filtered.Count} of {Cards.Count} {noun}";
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (!ReferenceEquals(_lastCards, Cards))
+        {
+            _lastCards = Cards;
+            SearchTerm = string.Empty;
+            ApplyFilter();
+        }
+    }
+
+    private void OnFilterInput(ChangeEventArgs e)
+    {
+        SearchTerm = e.Value?.ToString() ?? string.Empty;
+        ApplyFilter();
+    }
+
+    private void ApplyFilter()
+    {
+        var term = SearchTerm.Trim();
+
+        Filtered = term.Length == 0
+            ? Cards
+            : Cards.Where(c => c.Name.Contains(term, StringComparison.OrdinalIgnoreCase)).ToList();
+    }
+}

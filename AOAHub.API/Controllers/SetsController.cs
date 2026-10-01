@@ -1,3 +1,4 @@
+using AOAHub.API.Models;
 using AOAHub.Db;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,18 @@ namespace AOAHub.API.Controllers
             }
 
             return Ok(set);
+        }
+
+        [HttpGet]
+        [Route("{id:int}/cards")]
+        public async Task<IActionResult> GetSetCards(int id)
+        {
+            var cards = await _context.Cards
+                .Where(c => c.SetId == id)
+                .OrderBy(c => c.Id)
+                .ToCardRowsAsync();
+
+            return Ok(cards);
         }
     }
 }

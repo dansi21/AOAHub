@@ -1,0 +1,127 @@
+@page "/cards/{Id:int}"
+@using System.Net
+@using AOAHub.UI.Models
+@inject HttpClient Http
+
+<PageTitle>@(Card is null ? "Card" : Card.Name) - AspectAtlas</PageTitle>
+
+<div class="card-page">
+    <a class="back" href="/">&larr; Back to search</a>
+
+    @if (NotFound)
+    {
+        <div class="state">This card doesn't exist.</div>
+    }
+    else if (Error is not null)
+    {
+        <div class="state">@Error</div>
+    }
+    else if (Card is null)
+    {
+        <div class="state">Loading card...</div>
+    }
+    else
+    {
+        <div class="card-layout">
+            <div class="card-art">
+                @if (!string.IsNullOrWhiteSpace(Card.ImageUrl))
+                {
+                    <CardImage Src="@Card.ImageUrl" Alt="@Card.Name" />
+                }
+                else
+                {
+                    <div class="no-art">No image</div>
+                }
+            </div>
+
+            <div class="card-info">
+                <div class="info-header">
+                    <h1>@Card.Name</h1>
+                    <CostSymbols Cost="@Card.Cost" />
+                </div>
+
+                <div class="type-line">@TypeLine(Card)</div>
+
+                @{
+                    var hasText = !string.IsNullOrWhiteSpace(Card.Text);
+                    var hasStats = Card.Attack is not null && Card.Defense is not null;
+                }
+
+                @if (hasText)
+                {
+                    <div class="text-box">
+                        <p class="rules-text">@Card.Text</p>
+                        @if (hasStats)
+                        {
+                            <div class="stats">
+                                <span class="stat"><small>ATK</small>@Card.Attack</span>
+                                <span class="stat"><small>DEF</small>@Card.Defense</span>
+                            </div>
+                        }
+                    </div>
+                }
+                else if (hasStats)
+                {
+                    <div class="stats">
+                        <span class="stat"><small>ATK</small>@Card.Attack</span>
+                        <span class="stat"><small>DEF</small>@Card.Defense</span>
+                    </div>
+                }
+
+                <dl class="meta">
+                    <div>
+                        <dt>Illustrated by</dt>
+                        <dd><a class="meta-link" href="artists/@Card.ArtistId">@Card.ArtistName</a></dd>
+                    </div>
+                    <div>
+                        <dt>Set</dt>
+                        <dd class="set-line">
+                            <SetIcon Src="@Card.SetImageUrl" Alt="@Card.SetName" Size="1.9rem" />
+                            <span class="set-code">@Card.SetCode</span>
+                            @Card.SetName
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>Card number</dt>
+                        <dd>@Card.Code</dd>
+                    </div>
+                    <div>
+                        <dt>Released</dt>
+                        <dd>@(Card.SetReleaseDate?.ToString("MMMM d, yyyy") ?? "Unreleased")</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private CardDetail? Card;
+    private bool NotFound;
+    private string? Error;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Card = null;
+        NotFound = false;
+        Error = null;
+
+        try
+        {
+            Card = await Http.GetFromJsonAsync<CardDetail>($"cards/{Id}");
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            NotFound = true;
+        }
+        catch (Exception)
+        {
+            Error = "Couldn't load this card right now.";
+        }
+    }
+
+    private static string TypeLine(CardDetail card) =>
+        string.IsNullOrWhiteSpace(card.SubType) ? card.Type : $"{card.Type} — {card.SubType.Trim()}";
+}

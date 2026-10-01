@@ -1,0 +1,18 @@
+@if (!string.IsNullOrWhiteSpace(Src))
+{
+    <span class="artist-mark" style="--size:@Size">
+        <img src="@Src" alt="@Name" loading="lazy" />
+    </span>
+}
+else
+{
+    <span class="artist-mark initial" style="--size:@Size" aria-hidden="true">@Initial</span>
+}
+
+@code {
+    [Parameter, EditorRequired] public string Name { get; set; } = string.Empty;
+    [Parameter] public string? Src { get; set; }
+    [Parameter] public string Size { get; set; } = "3rem";
+
+    private string Initial => string.IsNullOrWhiteSpace(Name) ? "?" : Name.Trim()[..1].ToUpperInvariant();
+}

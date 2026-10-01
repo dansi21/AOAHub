@@ -1,0 +1,12 @@
+@if (!string.IsNullOrWhiteSpace(Src))
+{
+    <span class="set-icon" style="--size:@Size">
+        <img src="@Src" alt="@Alt" loading="lazy" />
+    </span>
+}
+
+@code {
+    [Parameter] public string? Src { get; set; }
+    [Parameter] public string Alt { get; set; } = string.Empty;
+    [Parameter] public string Size { get; set; } = "3rem";
+}

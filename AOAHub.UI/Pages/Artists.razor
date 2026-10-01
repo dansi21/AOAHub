@@ -1,8 +1,54 @@
 @page "/artists"
+@using AOAHub.UI.Models
+@inject HttpClient Http
 
-<PageTitle>Artists - AOAHub</PageTitle>
+<PageTitle>Artists - AspectAtlas</PageTitle>
 
-<div class="stub">
-    <h1>Artists</h1>
-    <p>Coming soon.</p>
+<div class="artists-page">
+    <div class="artists-header">
+        <h1>Artists</h1>
+    </div>
+
+    @if (Error is not null)
+    {
+        <div class="state">@Error</div>
+    }
+    else if (ArtistList is null)
+    {
+        <div class="state">Loading artists...</div>
+    }
+    else if (ArtistList.Count == 0)
+    {
+        <div class="state">No artists yet.</div>
+    }
+    else
+    {
+        <div class="artist-grid">
+            @foreach (var artist in ArtistList)
+            {
+                <a class="artist-card" href="artists/@artist.Id">
+                    <ArtistMark Name="@artist.Name" Src="@artist.ImageUrl" Size="5rem" />
+                    <h2>@artist.Name</h2>
+                    <span class="artist-count">@artist.CardCount @(artist.CardCount == 1 ? "card" : "cards")</span>
+                </a>
+            }
+        </div>
+    }
 </div>
+
+@code {
+    private List<ArtistSummary>? ArtistList;
+    private string? Error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            ArtistList = await Http.GetFromJsonAsync<List<ArtistSummary>>("artists") ?? new();
+        }
+        catch (Exception)
+        {
+            Error = "Couldn't load artists right now.";
+        }
+    }
+}

@@ -1,0 +1,8 @@
+<div class="card-image">
+    <img src="@Src" alt="@Alt" loading="lazy" />
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Src { get; set; } = string.Empty;
+    [Parameter] public string Alt { get; set; } = string.Empty;
+}

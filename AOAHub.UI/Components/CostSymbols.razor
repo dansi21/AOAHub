@@ -1,0 +1,38 @@
+@using System.Text.RegularExpressions
+
+@if (Symbols.Any())
+{
+    <span class="cost" aria-label="Cost @Cost">
+        @foreach (var symbol in Symbols)
+        {
+            var aura = AuraName(symbol);
+
+            @if (aura is not null)
+            {
+                <img class="aura" src="@Assets[$"images/cost/{aura.ToLowerInvariant()}.png"]" alt="@aura" title="@aura" decoding="async" />
+            }
+            else
+            {
+                <span class="symbol">@symbol</span>
+            }
+        }
+    </span>
+}
+
+@code {
+    [Parameter] public string? Cost { get; set; }
+
+    private IEnumerable<string> Symbols =>
+        string.IsNullOrWhiteSpace(Cost)
+            ? Enumerable.Empty<string>()
+            : Regex.Matches(Cost, @"\d+|[A-Za-z]").Select(m => m.Value);
+
+    private static string? AuraName(string symbol) => symbol.ToUpperInvariant() switch
+    {
+        "C" => "Creation",
+        "D" => "Destruction",
+        "A" => "Alteration",
+        "I" => "Investigation",
+        _ => null
+    };
+}

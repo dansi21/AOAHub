@@ -1,3 +1,4 @@
+using AOAHub.API.Models;
 using AOAHub.Db;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,18 @@ namespace AOAHub.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetArtists()
         {
-            var artists = await _context.Artists.ToListAsync();
+            var artists = await _context.Artists
+                .OrderBy(a => a.Name)
+                .Select(a => new ArtistSummary
+                {
+                    Id = a.Id,
+                    Name = a.Name,
+                    CardCount = _context.Cards.Count(c => c.ArtistId == a.Id),
+                    ImageUrl = a.ImageUrl,
+                    LinkBlob = a.LinkBlob
+                })
+                .ToListAsync();
+
             return Ok(artists);
         }
 
@@ -27,7 +39,17 @@ namespace AOAHub.API.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> GetArtist(int id)
         {
-            var artist = await _context.Artists.FindAsync(id);
+            var artist = await _context.Artists
+                .Where(a => a.Id == id)
+                .Select(a => new ArtistSummary
+                {
+                    Id = a.Id,
+                    Name = a.Name,
+                    CardCount = _context.Cards.Count(c => c.ArtistId == a.Id),
+                    ImageUrl = a.ImageUrl,
+                    LinkBlob = a.LinkBlob
+                })
+                .FirstOrDefaultAsync();
 
             if (artist is null)
             {
@@ -35,6 +57,19 @@ namespace AOAHub.API.Controllers
             }
 
             return Ok(artist);
+        }
+
+        [HttpGet]
+        [Route("{id:int}/cards")]
+        public async Task<IActionResult> GetArtistCards(int id)
+        {
+            var cards = await _context.Cards
+                .Where(c => c.ArtistId == id)
+                .OrderBy(c => c.SetId)
+                .ThenBy(c => c.Id)
+                .ToCardRowsAsync();
+
+            return Ok(cards);
         }
     }
 }

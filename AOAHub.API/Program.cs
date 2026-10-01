@@ -21,7 +21,7 @@ internal class Program
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("UI", policy => policy
-                .WithOrigins("http://localhost:5277")
+                .WithOrigins("http://localhost:5277", "https://localhost:7279")
                 .AllowAnyHeader()
                 .AllowAnyMethod());
         });
@@ -35,7 +35,11 @@ internal class Program
             app.UseSwaggerUI();
         }
 
-        app.UseHttpsRedirection();
+        // The dev UI calls the API over plain http; redirecting to https drops the CORS headers.
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseHttpsRedirection();
+        }
 
         app.UseCors("UI");
 
