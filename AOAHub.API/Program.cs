@@ -17,6 +17,7 @@ internal class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddHealthChecks();
 
         builder.Services.AddCors(options =>
         {
@@ -38,6 +39,8 @@ internal class Program
         // No HTTPS redirection: Caddy terminates TLS and talks to Kestrel over plain http on localhost.
         // CORS only matters in dev; in production the UI and API share an origin via the proxy.
         app.UseCors("UI");
+
+        app.MapHealthChecks("/status");
 
         app.UseAuthorization();
 
