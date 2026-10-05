@@ -35,12 +35,8 @@ internal class Program
             app.UseSwaggerUI();
         }
 
-        // The dev UI calls the API over plain http; redirecting to https drops the CORS headers.
-        if (!app.Environment.IsDevelopment())
-        {
-            app.UseHttpsRedirection();
-        }
-
+        // No HTTPS redirection: Caddy terminates TLS and talks to Kestrel over plain http on localhost.
+        // CORS only matters in dev; in production the UI and API share an origin via the proxy.
         app.UseCors("UI");
 
         app.UseAuthorization();

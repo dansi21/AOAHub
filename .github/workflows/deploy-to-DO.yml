@@ -1,0 +1,63 @@
+name: Deploy AspectAtlas
+
+on:
+  push:
+    branches:
+      - 'releases/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build API image
+        run: docker build -f AOAHub.API/Dockerfile -t aspectatlas-api:latest .
+
+      - name: Build UI image
+        run: docker build -f AOAHub.UI/Dockerfile -t aspectatlas-ui:latest .
+
+      - name: Save and compress images
+        run: docker save aspectatlas-api:latest aspectatlas-ui:latest | gzip > aspectatlas.tar.gz
+
+      - name: Copy images to droplet
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          passphrase: ${{ secrets.DROPLET_SSH_PASSPHRASE }}
+          source: aspectatlas.tar.gz
+          target: /tmp/
+
+      # Ports are bound to 127.0.0.1 so only the droplet's Caddy can reach the containers.
+      - name: Deploy on droplet
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          passphrase: ${{ secrets.DROPLET_SSH_PASSPHRASE }}
+          script: |
+            docker load < /tmp/aspectatlas.tar.gz
+
+            docker stop aspectatlas-api || true
+            docker rm aspectatlas-api || true
+            docker run -d \
+              --name aspectatlas-api \
+              --restart unless-stopped \
+              -p 127.0.0.1:8081:8080 \
+              aspectatlas-api:latest
+
+            docker stop aspectatlas-ui || true
+            docker rm aspectatlas-ui || true
+            docker run -d \
+              --name aspectatlas-ui \
+              --restart unless-stopped \
+              -p 127.0.0.1:8082:80 \
+              aspectatlas-ui:latest
+
+            docker image prune -f
+            rm /tmp/aspectatlas.tar.gz

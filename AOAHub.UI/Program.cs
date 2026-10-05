@@ -6,7 +6,8 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-var apiBaseUrl = builder.Configuration["ApiBaseUrl"] ?? builder.HostEnvironment.BaseAddress;
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiBaseUrl) });
+// ApiBaseUrl may be absolute (dev: separate API port) or relative to the site (prod: "/api/" behind the reverse proxy).
+var apiBaseUrl = new Uri(new Uri(builder.HostEnvironment.BaseAddress), builder.Configuration["ApiBaseUrl"] ?? "");
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = apiBaseUrl });
 
 await builder.Build().RunAsync();
