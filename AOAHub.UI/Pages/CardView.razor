@@ -26,7 +26,10 @@
             <div class="card-art">
                 @if (!string.IsNullOrWhiteSpace(Card.ImageUrl))
                 {
-                    <CardImage Src="@Card.ImageUrl" Alt="@Card.Name" />
+                    <button type="button" class="art-button" @ref="artButton" @onclick="OpenFullView"
+                            aria-label="View @Card.Name full screen">
+                        <CardImage Src="@Card.ImageUrl" Alt="@Card.Name" />
+                    </button>
                 }
                 else
                 {
@@ -92,6 +95,17 @@
                 </dl>
             </div>
         </div>
+
+        @if (FullView && !string.IsNullOrWhiteSpace(Card.ImageUrl))
+        {
+            <div class="full-view" role="dialog" aria-modal="true" aria-label="@Card.Name" tabindex="-1"
+                 @ref="fullViewRef" @onclick="CloseFullView" @onkeydown="OnFullViewKeyDown">
+                <button type="button" class="full-view-close" aria-label="Close">&times;</button>
+                <div class="full-view-card">
+                    <CardImage Src="@Card.ImageUrl" Alt="@Card.Name" />
+                </div>
+            </div>
+        }
     }
 </div>
 
@@ -102,11 +116,19 @@
     private bool NotFound;
     private string? Error;
 
+    private bool FullView;
+    private ElementReference artButton;
+    private ElementReference fullViewRef;
+    // Focus moves into the overlay when it opens (so Escape works) and back to the art when it closes.
+    private bool focusFullView;
+    private bool focusArtButton;
+
     protected override async Task OnParametersSetAsync()
     {
         Card = null;
         NotFound = false;
         Error = null;
+        FullView = false;
 
         try
         {
@@ -119,6 +141,40 @@
         catch (Exception)
         {
             Error = "Couldn't load this card right now.";
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (focusFullView)
+        {
+            focusFullView = false;
+            await fullViewRef.FocusAsync();
+        }
+        else if (focusArtButton)
+        {
+            focusArtButton = false;
+            await artButton.FocusAsync();
+        }
+    }
+
+    private void OpenFullView()
+    {
+        FullView = true;
+        focusFullView = true;
+    }
+
+    private void CloseFullView()
+    {
+        FullView = false;
+        focusArtButton = true;
+    }
+
+    private void OnFullViewKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            CloseFullView();
         }
     }
 

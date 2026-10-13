@@ -37,6 +37,78 @@
     box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
 }
 
+.art-button {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 4.5% / 3.2%;
+    background: none;
+    cursor: zoom-in;
+    transition: transform 0.2s ease;
+}
+
+.art-button:hover {
+    transform: translateY(-3px);
+}
+
+.art-button:focus-visible {
+    outline: 2px solid #e8b954;
+    outline-offset: 4px;
+}
+
+/* Full-screen card view; stays below the Blazor error banner (z-index 1000). */
+.full-view {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background: rgba(8, 6, 16, 0.88);
+    backdrop-filter: blur(6px);
+    cursor: zoom-out;
+    animation: full-view-in 0.18s ease-out;
+}
+
+.full-view:focus {
+    outline: none;
+}
+
+.full-view-card {
+    width: min(92vw, calc(92vh * 5 / 7));
+    width: min(92vw, calc(92dvh * 5 / 7));
+    border-radius: 4.5% / 3.2%;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+}
+
+.full-view-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.45);
+    color: #f4f4f7;
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.full-view-close:hover {
+    color: #e8b954;
+    border-color: #e8b954;
+}
+
+@keyframes full-view-in {
+    from {
+        opacity: 0;
+    }
+}
+
 .no-art {
     width: 100%;
     aspect-ratio: 5 / 7;
